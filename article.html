@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>9th Bit Research</title>
+  <meta name="description" content="">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" as="style"
+    href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;700&family=Bebas+Neue&display=swap"
+    onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript>
+    <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;700&family=Bebas+Neue&display=swap" />
+  </noscript>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ink: #0E0E0E; --ink-light: #1A1A1A; --paper: #F5F2EC; --paper-alt: #EAE6D9;
+      --rust: #C94B20; --rust-light: #F0D5C8; --slate: #3A3A48; --muted: #7A7A82;
+      --border: rgba(14,14,14,0.12);
+    }
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', system-ui, sans-serif; background: var(--paper); color: var(--ink); overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+    a { color: inherit; }
+    a:visited, a:active { color: inherit; }
+
+    /* NAV */
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 5%; background: var(--paper); border-bottom: 1px solid var(--border); transition: background 0.3s; }
+    .logo { display: flex; align-items: center; text-decoration: none; flex-shrink: 0; }
+    .logo img { height: 36px; width: auto; max-width: 140px; display: block; object-fit: contain; object-position: left center; }
+    .nav-links { display: flex; align-items: center; gap: 2.5rem; list-style: none; }
+    .nav-links a { text-decoration: none; font-size: 14px; font-weight: 500; color: var(--slate); letter-spacing: 0.03em; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--ink); }
+    .nav-cta { background: var(--ink); color: var(--paper) !important; padding: 0.6rem 1.5rem; font-weight: 500 !important; border-radius: 4px; transition: background 0.2s !important; }
+    .nav-cta:hover { background: var(--rust) !important; color: var(--paper) !important; }
+    .nav-badge { display: inline-block; background: var(--rust); color: var(--paper); font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 6px; border-radius: 2px; margin-left: 6px; vertical-align: middle; }
+    .burger { display: none; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; padding: 6px; background: none; border: none; order: -1; }
+    .burger span { width: 5px; height: 5px; border-radius: 50%; background: var(--ink); display: block; }
+    .burger:hover span { background: var(--rust); }
+    .mob-overlay { display: none; position: fixed; inset: 0; background: rgba(14,14,14,0.45); z-index: 298; opacity: 0; transition: opacity 0.3s; }
+    .mob-overlay.open { display: block; opacity: 1; }
+    .mob-drawer { position: fixed; top: 0; left: 0; width: 280px; height: 100dvh; background: var(--paper); z-index: 299; transform: translateX(-100%); transition: transform 0.32s cubic-bezier(0.4,0,0.2,1); display: flex; flex-direction: column; overflow-y: auto; }
+    .mob-drawer.open { transform: translateX(0); }
+    .mob-drawer-head { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); }
+    .mob-drawer-head img { height: 30px; width: auto; }
+    .mob-close { background: none; border: none; font-size: 1.4rem; color: var(--muted); cursor: pointer; line-height: 1; padding: 4px; }
+    .mob-close:hover { color: var(--rust); }
+    .mob-nav-links { list-style: none; padding: 1rem 0; flex: 1; }
+    .mob-nav-links li a { display: block; padding: 0.9rem 1.5rem; font-size: 15px; font-weight: 500; color: var(--slate); text-decoration: none; border-left: 2px solid transparent; transition: all 0.15s; }
+    .mob-nav-links li a:hover { color: var(--ink); border-left-color: var(--rust); background: var(--paper-alt); }
+
+    /* ARTICLE LAYOUT */
+    .article-layout {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding-top: 57px;
+      min-height: 100vh;
+      align-items: start;
+    }
+
+    /* MAIN CONTENT */
+    .article-main { border-right: 1px solid var(--border); padding: 4rem 5% 5rem; }
+
+    /* BREADCRUMB */
+    .breadcrumb { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 2.5rem; }
+    .breadcrumb a { font-size: 12px; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+    .breadcrumb a:hover { color: var(--rust); }
+    .breadcrumb span { font-size: 12px; color: var(--border); }
+
+    /* ARTICLE HEADER */
+    .article-cat-badge {
+      display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--rust); border: 1px solid var(--rust-light);
+      padding: 3px 10px; border-radius: 2px; margin-bottom: 1.5rem;
+    }
+    .article-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.1; color: var(--ink); margin-bottom: 1.5rem;
+    }
+    .article-meta {
+      display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;
+      padding: 1.25rem 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+      margin-bottom: 3rem;
+    }
+    .meta-item { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+    .meta-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--border); }
+    .article-author { font-size: 12px; color: var(--ink); font-weight: 600; }
+    .article-author-role { font-size: 11px; color: var(--muted); font-weight: 400; }
+
+    /* ARTICLE BODY */
+    .article-body { font-size: 16px; line-height: 1.8; color: var(--slate); max-width: 680px; }
+    .article-body p { margin-bottom: 1.5rem; }
+    .article-body p:last-child { margin-bottom: 0; }
+    .article-body h2 {
+      font-family: 'DM Serif Display', serif; font-size: 1.75rem; font-weight: 400;
+      color: var(--ink); margin: 3rem 0 1rem; line-height: 1.2;
+      scroll-margin-top: 80px; /* offset for fixed nav */
+    }
+    .article-body h2::before { content: '—'; color: var(--rust); margin-right: 0.5rem; font-style: normal; }
+
+    /* CALLOUT */
+    .callout {
+      border-left: 3px solid var(--rust);
+      background: var(--paper-alt);
+      padding: 1.25rem 1.5rem;
+      margin: 2rem 0;
+      border-radius: 0 3px 3px 0;
+    }
+    .callout-label {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--rust); margin-bottom: 0.5rem;
+    }
+    .callout-text { font-size: 14px; line-height: 1.7; color: var(--slate); font-style: italic; }
+
+    /* TAGS */
+    .article-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+    .tag { font-size: 11px; color: var(--muted); background: var(--paper-alt); padding: 4px 12px; border-radius: 2px; border: 1px solid var(--border); }
+
+    /* SIDEBAR */
+    .article-sidebar { padding: 4rem 2rem 5rem; position: sticky; top: 57px; }
+    .sidebar-section { margin-bottom: 2.5rem; }
+    .sidebar-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 1rem; }
+
+    /* TABLE OF CONTENTS */
+    .toc-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+    .toc-list li a {
+      font-size: 13px; color: var(--slate); text-decoration: none;
+      padding: 0.3rem 0 0.3rem 0.75rem; border-left: 2px solid var(--border);
+      display: block; transition: all 0.15s; line-height: 1.4;
+    }
+    .toc-list li a:hover { color: var(--ink); border-left-color: var(--rust); }
+
+    /* RELATED */
+    .related-card {
+      display: block; text-decoration: none; padding: 1rem;
+      border: 1px solid var(--border); border-radius: 2px; margin-bottom: 0.75rem;
+      background: var(--paper); transition: background 0.2s;
+    }
+    .related-card:hover { background: var(--paper-alt); }
+    .related-cat { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rust); margin-bottom: 0.4rem; }
+    .related-title { font-size: 13px; color: var(--ink); font-weight: 500; line-height: 1.4; }
+
+    /* CTA SIDEBAR BOX */
+    .sidebar-cta {
+      background: var(--ink); color: var(--paper); padding: 1.5rem;
+      border-radius: 2px;
+    }
+    .sidebar-cta h3 { font-family: 'DM Serif Display', serif; font-size: 1.1rem; font-weight: 400; margin-bottom: 0.75rem; }
+    .sidebar-cta p { font-size: 12px; color: rgba(245,242,236,0.65); line-height: 1.6; margin-bottom: 1.25rem; }
+    .sidebar-cta a {
+      display: block; text-align: center; background: var(--rust); color: var(--paper);
+      text-decoration: none; padding: 0.7rem 1rem; font-size: 12px; font-weight: 600;
+      letter-spacing: 0.05em; border-radius: 2px; transition: background 0.2s;
+    }
+    .sidebar-cta a:hover { background: #a83a18; }
+
+    /* PROGRESS BAR */
+    .progress-bar {
+      position: fixed; top: 0; left: 0; height: 2px;
+      background: var(--rust); z-index: 200;
+      transition: width 0.1s linear;
+      width: 0%;
+    }
+
+    /* BACK LINK */
+    .back-to-research {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 13px; font-weight: 600; color: var(--slate);
+      text-decoration: none; letter-spacing: 0.03em;
+      transition: color 0.2s;
+      margin-top: 3rem;
+    }
+    .back-to-research:hover { color: var(--rust); }
+
+    /* FOOTER */
+    footer { background: var(--ink-light); color: var(--paper); padding: 3rem 5% 1.5rem; border-top: 1px solid rgba(245,242,236,0.08); }
+    .footer-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+    .footer-bottom p { font-size: 12px; color: rgba(245,242,236,0.35); }
+
+    /* NOT FOUND */
+    .not-found { text-align: center; padding: 8rem 5%; }
+    .not-found h1 { font-family: 'DM Serif Display', serif; font-size: 3rem; margin-bottom: 1rem; }
+    .not-found p { color: var(--muted); margin-bottom: 2rem; }
+
+    /* ABSTRACT BLOCK */
+    .abstract-block {
+      background: var(--paper-alt);
+      border-left: 3px solid var(--rust);
+      padding: 1.75rem 2rem;
+      margin-bottom: 2.5rem;
+      border-radius: 0 3px 3px 0;
+    }
+    .abstract-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--rust);
+      margin-bottom: 0.75rem;
+    }
+    .abstract-text {
+      font-size: 15.5px;
+      line-height: 1.8;
+      color: var(--slate);
+    }
+
+    /* ARTICLE ACTION BUTTONS */
+    .art-actions {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-bottom: 2.5rem;
+    }
+    .art-btn-view {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      padding: 0.65rem 1.4rem;
+      background: var(--ink);
+      color: var(--paper);
+      border-radius: 3px;
+      text-decoration: none;
+      font-family: 'DM Sans', sans-serif;
+      transition: background 0.2s;
+    }
+    .art-btn-view:hover { background: var(--rust); color: var(--paper); }
+    .art-btn-dl {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      padding: 0.65rem 1.4rem;
+      background: transparent;
+      color: var(--ink);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      text-decoration: none;
+      font-family: 'DM Sans', sans-serif;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+    }
+    .art-btn-dl:hover { border-color: var(--rust); color: var(--rust); background: var(--rust-light); }
+
+    @media(max-width: 900px) {
+      .article-layout { grid-template-columns: 1fr; }
+      .article-main { border-right: none; }
+      .article-sidebar { position: static; border-top: 1px solid var(--border); }
+    }
+    @media(max-width: 600px) {
+      .nav-links { display: none; }
+      .burger { display: flex; }
+      .article-main { padding: 3rem 5% 4rem; }
+      .article-title { font-size: 1.8rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="progress-bar" id="progressBar"></div>
+
+  <!-- NAV -->
+  <nav id="mainNav">
+    <button class="burger" id="burgerBtn" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+    <a href="https://9thbit.org" class="logo">
+      <img src="https://9thbit.org/assets/9th_logo_web.webp" alt="9th Bit Labs" width="140" height="36" fetchpriority="high" decoding="async" />
+    </a>
+    <ul class="nav-links">
+      <li><a href="https://9thbit.org">Home</a></li>
+    </ul>
+  </nav>
+
+  <!-- MOBILE DRAWER -->
+  <div class="mob-overlay" id="mobOverlay"></div>
+  <div class="mob-drawer" id="mobDrawer">
+    <div class="mob-drawer-head">
+      <img src="https://9thbit.org/assets/9th_logo_web.webp" alt="9th Bit Labs" />
+      <button class="mob-close" id="mobClose">×</button>
+    </div>
+    <ul class="mob-nav-links" id="mobNavLinks">
+      <li><a href="https://9thbit.org">Home</a></li>
+    </ul>
+  </div>
+
+  <!-- ARTICLE WILL BE INJECTED HERE -->
+  <div id="articleRoot"></div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-bottom">
+      <p>© 2026 9th Bit Labs. Nagpur, India.</p>
+      <div style="display:flex;gap:1.25rem;align-items:center;">
+        <a href="https://x.com/9thBitLabs" style="color:rgba(245,242,236,0.5);text-decoration:none;font-size:13px;transition:color 0.2s;" onmouseover="this.style.color='#F5F2EC'" onmouseout="this.style.color='rgba(245,242,236,0.5)'">Twitter</a>
+        <a href="https://www.linkedin.com/company/9thbitlabs" style="color:rgba(245,242,236,0.5);text-decoration:none;font-size:13px;transition:color 0.2s;" onmouseover="this.style.color='#F5F2EC'" onmouseout="this.style.color='rgba(245,242,236,0.5)'">LinkedIn</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ── Drawer ──
+    const drawer = document.getElementById('mobDrawer');
+    const overlay = document.getElementById('mobOverlay');
+    document.getElementById('burgerBtn').addEventListener('click', () => { drawer.classList.add('open'); overlay.classList.add('open'); document.body.style.overflow='hidden'; });
+    document.getElementById('mobClose').addEventListener('click', closeDrawer);
+    overlay.addEventListener('click', closeDrawer);
+    function closeDrawer() { drawer.classList.remove('open'); overlay.classList.remove('open'); document.body.style.overflow=''; }
+
+    // ── Navbar scroll ──
+    const nav = document.getElementById('mainNav');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) { nav.style.background = 'rgba(245,242,236,0.95)'; nav.style.backdropFilter = 'blur(10px)'; }
+      else { nav.style.background = 'var(--paper)'; nav.style.backdropFilter = 'none'; }
+    }, { passive: true });
+
+    // ── Progress bar ──
+    const progressBar = document.getElementById('progressBar');
+    window.addEventListener('scroll', () => {
+      const docH = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = docH > 0 ? (window.scrollY / docH) * 100 : 0;
+      progressBar.style.width = pct + '%';
+    }, { passive: true });
+
+    // ── Load article ──
+    function formatDate(d) {
+      return new Date(d).toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+    }
+
+    function renderSection(s) {
+      if (s.type === 'intro') {
+        return `<p style="font-size:18px;line-height:1.75;color:var(--ink);font-weight:400;margin-bottom:2rem;">${nl2p(s.content)}</p>`;
+      }
+      if (s.type === 'heading') {
+        return `<h2>${s.content}</h2>`;
+      }
+      if (s.type === 'text') {
+        return `<div style="margin-bottom:1.5rem;">${s.content.split('\n\n').map(p => `<p>${p}</p>`).join('')}</div>`;
+      }
+      if (s.type === 'callout') {
+        return `<div class="callout"><div class="callout-label">${s.label}</div><p class="callout-text">${s.content}</p></div>`;
+      }
+      return '';
+    }
+
+    function nl2p(t) { return t.split('\n').filter(Boolean).join('<br>'); }
+
+    async function loadArticle() {
+      const params = new URLSearchParams(location.search);
+      const id = params.get('id');
+      const root = document.getElementById('articleRoot');
+
+      if (!id) { showNotFound(root); return; }
+
+      let data;
+      try {
+        const res = await fetch('articles.json');
+        data = await res.json();
+      } catch(e) { showNotFound(root); return; }
+
+      const article = data.articles.find(a => a.slug === id || a.id === id);
+      if (!article) { showNotFound(root); return; }
+
+      // Update page meta
+      document.title = `${article.title} | 9th Bit Research`;
+      document.querySelector('meta[name="description"]').setAttribute('content', article.excerpt);
+
+      // Action buttons
+      const viewBtn = article.paperUrl
+        ? `<a class="art-btn-view" href="${article.paperUrl}" target="_blank" rel="noopener">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            View Full Paper
+          </a>` : '';
+      const dlBtn = article.downloadUrl
+        ? `<a class="art-btn-dl" href="${article.downloadUrl}" download>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download Paper
+          </a>` : '';
+
+      root.innerHTML = `
+        <div class="article-layout">
+          <article class="article-main">
+            <nav class="breadcrumb" aria-label="Breadcrumb">
+              <a href="https://9thbit.org">Home</a>
+              <span>›</span>
+              <a href="index.html">Research</a>
+              <span>›</span>
+              <span style="color:var(--ink);font-size:12px;">${article.category}</span>
+            </nav>
+
+            <div class="article-cat-badge">${article.category}</div>
+            <h1 class="article-title">${article.title}</h1>
+
+            <div class="article-meta">
+              <span class="meta-item">
+                <span class="article-author">${article.author.name}</span>
+                <span class="article-author-role">· ${article.author.role}</span>
+              </span>
+              <span class="meta-dot"></span>
+              <span class="meta-item">${formatDate(article.date)}</span>
+              <span class="meta-dot"></span>
+              <span class="meta-item">${article.readTime}</span>
+            </div>
+
+            ${article.image ? `<img src="${article.image}" alt="${article.title}" style="width:100%;max-height:360px;object-fit:cover;display:block;margin-bottom:2.5rem;border-radius:2px;">` : ''}
+
+            <div class="abstract-block">
+              <div class="abstract-label">Abstract</div>
+              <p class="abstract-text">${article.abstract || article.excerpt}</p>
+            </div>
+
+            <div class="art-actions">${viewBtn}${dlBtn}</div>
+
+            <div class="article-tags">
+              ${article.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+            </div>
+
+            <a class="back-to-research" href="index.html">← Back to Research</a>
+          </article>
+
+          <aside class="article-sidebar">
+            <div class="sidebar-cta">
+              <h3>Work with us on AI projects</h3>
+              <p>We build production-grade AI automation, RAG systems, and agent pipelines for ambitious businesses.</p>
+              <a href="https://9thbit.org/#contact">Start a Conversation →</a>
+            </div>
+          </aside>
+        </div>`;
+    }
+
+    function showNotFound(root) {
+      root.innerHTML = `
+        <div class="not-found">
+          <h1>Article not found</h1>
+          <p>The article you're looking for doesn't exist or has been moved.</p>
+          <a href="index.html" style="color:var(--rust);text-decoration:underline;">Browse all articles →</a>
+        </div>`;
+    }
+
+    loadArticle();
+  </script>
+</body>
+</html>

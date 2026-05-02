@@ -1,0 +1,72 @@
+{
+  "articles": [
+    {
+      "id": "llm-agents-autonomous-pipelines-2026",
+      "title": "LLM Agents & Autonomous Pipelines: A Practitioner's Guide",
+      "slug": "llm-agents-autonomous-pipelines-2026",
+      "date": "2026-04-28",
+      "readTime": "12 min read",
+      "category": "AI Research",
+      "tags": ["LLM", "Agents", "Automation", "GPT-4o", "Orchestration"],
+      "author": { "name": "9th Bit Labs Research", "role": "AI Engineering Team" },
+      "excerpt": "Autonomous LLM agents are reshaping how complex workflows are engineered — exploring multi-agent orchestration, tool-use frameworks, and failure modes in production.",
+      "abstract": "This paper examines LLM agent architectures deployed in production environments across three orchestration patterns: supervisor-worker, sequential pipeline, and reactive event-loop. We document failure modes including prompt drift, tool hallucination, and state corruption, and propose engineering heuristics for loop termination, tool validation, cost management, and observability. Findings indicate that treating agentic AI as a distributed systems problem yields significantly more reliable outcomes than prompt-engineering approaches.",
+      "image": "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=800&q=80",
+      "paperUrl": "papers/llm-agents-autonomous-pipelines-2026.pdf",
+      "downloadUrl": "papers/llm-agents-autonomous-pipelines-2026.pdf",
+      "featured": true,
+      "sections": []
+    },
+    {
+      "id": "rag-retrieval-architecture-patterns",
+      "title": "RAG in Production: Retrieval Architecture Patterns That Actually Work",
+      "slug": "rag-retrieval-architecture-patterns",
+      "date": "2026-04-14",
+      "readTime": "9 min read",
+      "category": "Engineering",
+      "tags": ["RAG", "Vector DB", "Embeddings", "LLM", "Search"],
+      "author": { "name": "9th Bit Labs Research", "role": "AI Engineering Team" },
+      "excerpt": "RAG is now the default architecture for enterprise LLM apps. We cover chunking strategies, hybrid search, re-ranking, and the evaluation metrics that actually predict answer quality.",
+      "abstract": "Retrieval-Augmented Generation (RAG) has become the dominant pattern for grounding LLMs in private or time-sensitive data. This paper systematically evaluates chunking strategies — fixed-size, semantic, hierarchical, and proposition-level — alongside hybrid dense+sparse search methods. We demonstrate that cross-encoder re-ranking post-retrieval yields the highest ROI optimisation in RAG systems, and identify four evaluation metrics — Context Precision, Context Recall, Answer Faithfulness, and Answer Relevance — that most reliably predict end-user quality ratings across five production deployments.",
+      "image": "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=800&q=80",
+      "paperUrl": "papers/rag-retrieval-architecture-patterns.pdf",
+      "downloadUrl": "papers/rag-retrieval-architecture-patterns.pdf",
+      "featured": false,
+      "sections": []
+    },
+    {
+      "id": "ai-automation-roi-framework",
+      "title": "Measuring AI Automation ROI: A Framework for Engineering Teams",
+      "slug": "ai-automation-roi-framework",
+      "date": "2026-03-31",
+      "readTime": "7 min read",
+      "category": "Strategy",
+      "tags": ["ROI", "Automation", "Business Case", "AI Strategy", "Metrics"],
+      "author": { "name": "9th Bit Labs Research", "role": "AI Engineering Team" },
+      "excerpt": "Most AI automation projects fail not because the technology doesn't work, but because success was never defined. A pragmatic framework for measuring real business value.",
+      "abstract": "The majority of AI automation initiatives fail not due to technical inadequacy but due to absent success metrics. This paper presents a structured ROI measurement framework centred on three value levers: labour cost reduction, throughput expansion, and error rate reduction. We detail the instrumentation required at launch and propose a 90-day assessment cycle with formal reviews at 30, 60, and 90 days post-deployment. Evidence from five production deployments shows projects tracking all three levers break even 40% faster than those tracking labour savings alone.",
+      "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80",
+      "paperUrl": "papers/ai-automation-roi-framework.pdf",
+      "downloadUrl": "papers/ai-automation-roi-framework.pdf",
+      "featured": false,
+      "sections": []
+    },
+    {
+      "id": "fine-tuning-vs-rag-decision-guide",
+      "title": "Fine-Tuning vs RAG: How to Choose the Right Architecture",
+      "slug": "fine-tuning-vs-rag-decision-guide",
+      "date": "2026-03-10",
+      "readTime": "8 min read",
+      "category": "AI Research",
+      "tags": ["Fine-Tuning", "RAG", "LLM", "Architecture", "Decision Framework"],
+      "author": { "name": "9th Bit Labs Research", "role": "AI Engineering Team" },
+      "excerpt": "The fine-tune vs. RAG debate is often a false binary. They solve different problems — the best production systems combine both. A decision guide from real project experience.",
+      "abstract": "The choice between fine-tuning and retrieval-augmented generation is frequently misframed as binary. This paper argues that fine-tuning addresses behaviour gaps — output format, style, domain-specific reasoning — while RAG addresses knowledge gaps — updatable, private, or time-sensitive facts. We propose a decision heuristic and examine the combined architecture as the highest-performing pattern for enterprise deployments, validated against four production systems showing a 2.4× reduction in architecture iteration cycles when gap type is correctly classified.",
+      "image": "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&q=80",
+      "paperUrl": "papers/fine-tuning-vs-rag-decision-guide.pdf",
+      "downloadUrl": "papers/fine-tuning-vs-rag-decision-guide.pdf",
+      "featured": false,
+      "sections": []
+    }
+  ]
+}

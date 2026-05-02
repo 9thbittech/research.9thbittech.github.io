@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>9th Bit Labs | Research</title>
+  <meta name="description"
+    content="Deep-dive articles on AI engineering, LLM agents, RAG, automation ROI, and applied machine learning from the 9th Bit Labs team.">
+  <link rel="canonical" href="https://9thbit.org/research/" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" as="style"
+    href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;700&family=Bebas+Neue&display=swap"
+    onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript>
+    <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;700&family=Bebas+Neue&display=swap" />
+  </noscript>
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --ink: #0E0E0E;
+      --ink-light: #1A1A1A;
+      --paper: #F5F2EC;
+      --paper-alt: #EAE6D9;
+      --rust: #C94B20;
+      --rust-light: #F0D5C8;
+      --slate: #3A3A48;
+      --muted: #7A7A82;
+      --border: rgba(14, 14, 14, 0.12);
+    }
+
+    html {
+      font-size: 16px;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    a:visited,
+    a:active {
+      color: inherit;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.6rem 5%;
+      background: var(--paper);
+      border-bottom: 1px solid var(--border);
+      transition: background 0.3s;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+
+    .logo img {
+      height: 36px;
+      width: auto;
+      max-width: 140px;
+      display: block;
+      object-fit: contain;
+      object-position: left center;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--slate);
+      letter-spacing: 0.03em;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--ink);
+    }
+
+    .nav-cta {
+      background: var(--ink);
+      color: var(--paper) !important;
+      padding: 0.6rem 1.5rem;
+      font-weight: 500 !important;
+      border-radius: 4px;
+      transition: background 0.2s !important;
+    }
+
+    .nav-cta:hover {
+      background: var(--rust) !important;
+      color: var(--paper) !important;
+    }
+
+    .nav-badge {
+      display: inline-block;
+      background: var(--rust);
+      color: var(--paper);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border-radius: 2px;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
+    /* BURGER */
+    .burger {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      padding: 6px;
+      background: none;
+      border: none;
+      order: -1;
+    }
+
+    .burger span {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--ink);
+      display: block;
+      transition: background 0.2s;
+    }
+
+    .burger:hover span {
+      background: var(--rust);
+    }
+
+    /* MOBILE DRAWER */
+    .mob-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(14, 14, 14, 0.45);
+      z-index: 298;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .mob-overlay.open {
+      display: block;
+      opacity: 1;
+    }
+
+    .mob-drawer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 280px;
+      height: 100dvh;
+      background: var(--paper);
+      z-index: 299;
+      transform: translateX(-100%);
+      transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .mob-drawer.open {
+      transform: translateX(0);
+    }
+
+    .mob-drawer-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .mob-drawer-head img {
+      height: 30px;
+      width: auto;
+    }
+
+    .mob-close {
+      background: none;
+      border: none;
+      font-size: 1.4rem;
+      color: var(--muted);
+      cursor: pointer;
+      line-height: 1;
+      padding: 4px;
+    }
+
+    .mob-close:hover {
+      color: var(--rust);
+    }
+
+    .mob-nav-links {
+      list-style: none;
+      padding: 1rem 0;
+      flex: 1;
+    }
+
+    .mob-nav-links li a {
+      display: block;
+      padding: 0.9rem 1.5rem;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--slate);
+      text-decoration: none;
+      border-left: 2px solid transparent;
+      transition: all 0.15s;
+    }
+
+    .mob-nav-links li a:hover {
+      color: var(--ink);
+      border-left-color: var(--rust);
+      background: var(--paper-alt);
+    }
+
+    /* PROGRESS BAR */
+    .progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 2px;
+      background: var(--rust);
+      z-index: 200;
+      width: 0%;
+      transition: width 0.1s linear;
+    }
+
+    /* HERO */
+    .research-hero {
+      padding: 120px 5% 70px;
+      border-bottom: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: end;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+
+    .eyebrow::before {
+      content: '';
+      display: block;
+      width: 24px;
+      height: 1px;
+      background: var(--rust);
+    }
+
+    .hero-headline {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2.8rem, 5vw, 5rem);
+      line-height: 1.05;
+      color: var(--ink);
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-headline em {
+      font-style: italic;
+      color: var(--rust);
+    }
+
+    .hero-sub {
+      font-size: 16px;
+      line-height: 1.75;
+      color: var(--muted);
+      max-width: 460px;
+    }
+
+    .hero-right {
+      padding-bottom: 0.5rem;
+    }
+
+    .hero-stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      border: 1px solid var(--border);
+    }
+
+    .hero-stat {
+      padding: 1.5rem;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero-stat:nth-child(even) {
+      border-right: none;
+    }
+
+    .hero-stat:nth-child(3),
+    .hero-stat:nth-child(4) {
+      border-bottom: none;
+    }
+
+    .hero-stat-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.5rem;
+      color: var(--rust);
+      line-height: 1;
+      margin-bottom: 0.25rem;
+    }
+
+    .hero-stat-label {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+
+    /* FILTER BAR — sticky under nav */
+    .filter-bar {
+      position: sticky;
+      top: 57px;
+      z-index: 90;
+      padding: 0.9rem 5%;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      background: rgba(245, 242, 236, 0.97);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .filter-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-right: 0.25rem;
+      flex-shrink: 0;
+    }
+
+    .filter-btn {
+      background: none;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      padding: 0.4rem 1rem;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--slate);
+      border-radius: 2px;
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.18s;
+    }
+
+    .filter-btn:hover {
+      border-color: var(--ink);
+      color: var(--ink);
+      background: var(--paper-alt);
+    }
+
+    .filter-btn.active {
+      background: var(--ink);
+      color: var(--paper);
+      border-color: var(--ink);
+    }
+
+    /* Search */
+    .filter-search-wrap {
+      margin-left: auto;
+      position: relative;
+    }
+
+    .filter-search {
+      border: 1px solid var(--border);
+      background: var(--paper);
+      padding: 0.4rem 0.9rem 0.4rem 2rem;
+      font-size: 13px;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--ink);
+      border-radius: 2px;
+      width: 200px;
+      outline: none;
+      transition: border-color 0.2s, width 0.3s;
+    }
+
+    .filter-search:focus {
+      border-color: var(--ink);
+      width: 260px;
+    }
+
+    .filter-search::placeholder {
+      color: var(--muted);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 0.6rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      pointer-events: none;
+    }
+
+    /* View toggle */
+    .view-toggle {
+      display: flex;
+      gap: 4px;
+      margin-left: 0.75rem;
+    }
+
+    .view-btn {
+      background: none;
+      border: 1px solid var(--border);
+      padding: 5px 7px;
+      cursor: pointer;
+      border-radius: 2px;
+      color: var(--muted);
+      transition: all 0.15s;
+      line-height: 1;
+    }
+
+    .view-btn.active,
+    .view-btn:hover {
+      background: var(--ink);
+      color: var(--paper);
+      border-color: var(--ink);
+    }
+
+    /* ARTICLES GRID */
+    .articles-wrap {
+      padding: 3rem 5% 4rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .articles-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      transition: opacity 0.25s ease;
+    }
+
+    @media (max-width: 1100px) {
+      .articles-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .articles-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .articles-grid.fading {
+      opacity: 0;
+    }
+
+    /* List view */
+    .articles-grid.list-view {
+      grid-template-columns: 1fr;
+    }
+
+    .articles-grid.list-view .article-card {
+      flex-direction: row;
+      align-items: center;
+      gap: 2rem;
+      height: auto;
+    }
+
+    .articles-grid.list-view .article-card .ac-image {
+      width: 200px;
+      height: 100%;
+      flex-shrink: 0;
+    }
+
+    .articles-grid.list-view .article-card .ac-body {
+      flex: 1;
+    }
+
+    /* Result count */
+    .results-count {
+      font-size: 12px;
+      color: var(--muted);
+      margin-left: auto;
+    }
+
+    /* FEATURED ARTICLE */
+    .article-featured {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-bottom: 1px solid var(--border);
+      text-decoration: none;
+      transition: background 0.22s, box-shadow 0.22s;
+      position: relative;
+    }
+
+    .article-featured:hover {
+      background: var(--paper-alt);
+      box-shadow: inset 3px 0 0 var(--rust);
+    }
+
+    .article-featured .af-left {
+      padding: 3rem;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .article-featured .af-right {
+      padding: 3rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+
+    .featured-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--rust);
+      margin-bottom: 1.5rem;
+    }
+
+    .featured-badge::before {
+      content: '';
+      width: 16px;
+      height: 1px;
+      background: var(--rust);
+    }
+
+    .af-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(1.8rem, 3vw, 2.5rem);
+      line-height: 1.1;
+      color: var(--ink);
+      margin-bottom: 1.25rem;
+    }
+
+    .af-excerpt {
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--slate);
+    }
+
+    .af-meta {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 2rem;
+    }
+
+    .article-cat {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--rust);
+      border: 1px solid var(--rust-light);
+      padding: 3px 8px;
+      border-radius: 2px;
+    }
+
+    .article-date {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .article-read-time {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .af-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .tag {
+      font-size: 11px;
+      color: var(--muted);
+      background: var(--paper-alt);
+      padding: 3px 10px;
+      border-radius: 2px;
+      border: 1px solid var(--border);
+    }
+
+    .read-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      color: var(--ink);
+      text-decoration: none;
+      border-bottom: 1px solid var(--ink);
+      padding-bottom: 2px;
+      transition: color 0.2s, border-color 0.2s;
+      width: fit-content;
+    }
+
+    .read-link:hover {
+      color: var(--rust);
+      border-color: var(--rust);
+    }
+
+    /* REGULAR ARTICLE CARD */
+    .article-card {
+      display: flex;
+      flex-direction: column;
+      height: 480px;
+      overflow: hidden;
+      padding: 0;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      cursor: pointer;
+      background: var(--paper);
+      box-shadow: 0 2px 8px rgba(14,14,14,0.05);
+      transition: background 0.22s, transform 0.22s, box-shadow 0.22s;
+      position: relative;
+    }
+
+    .article-card::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      top: 0;
+      width: 0;
+      background: var(--rust);
+      transition: width 0.22s ease;
+      z-index: 2;
+    }
+
+    .article-card:hover::after {
+      width: 3px;
+    }
+
+    .article-card:hover {
+      background: var(--paper-alt);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(14, 14, 14, 0.12);
+      z-index: 1;
+    }
+
+    /* inner wrapper so padding doesn't affect image bleed */
+    .ac-body {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      padding: 1.5rem 1.75rem;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .ac-cat-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+      flex-shrink: 0;
+    }
+
+    .ac-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.25rem;
+      line-height: 1.25;
+      color: var(--ink);
+      margin-bottom: 0.65rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .ac-excerpt {
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--slate);
+      margin-bottom: 0.75rem;
+      flex: 1;
+      min-height: 0;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* Article card image */
+    .ac-image {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      display: block;
+      flex-shrink: 0;
+      filter: brightness(0.94);
+      transition: filter 0.3s;
+    }
+
+    .article-card:hover .ac-image {
+      filter: brightness(1);
+    }
+
+    /* Featured article image */
+    .af-image {
+      width: 100%;
+      height: 260px;
+      object-fit: cover;
+      display: block;
+      border-bottom: 1px solid var(--border);
+      filter: brightness(0.92);
+      transition: filter 0.3s;
+    }
+
+    .article-featured:hover .af-image {
+      filter: brightness(1);
+    }
+
+    /* Action buttons */
+    .card-actions {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      margin-top: auto;
+      padding-top: 0.75rem;
+      flex-shrink: 0;
+    }
+
+    .btn-view {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0.5rem 1rem;
+      background: var(--ink);
+      color: var(--paper) !important;
+      border: none;
+      border-radius: 2px;
+      cursor: pointer;
+      text-decoration: none;
+      font-family: 'DM Sans', sans-serif;
+      transition: background 0.2s, transform 0.15s;
+    }
+
+    .btn-view:visited,
+    .btn-view:active {
+      color: var(--paper) !important;
+    }
+
+    .btn-view:hover {
+      background: var(--rust);
+      transform: translateY(-1px);
+      color: var(--paper) !important;
+    }
+
+    .btn-download {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0.5rem 1rem;
+      background: transparent;
+      color: var(--ink);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      cursor: pointer;
+      text-decoration: none;
+      font-family: 'DM Sans', sans-serif;
+      transition: border-color 0.2s, color 0.2s, background 0.2s, transform 0.15s;
+    }
+
+    .btn-download:hover {
+      border-color: var(--rust);
+      color: var(--rust);
+      background: var(--rust-light);
+      transform: translateY(-1px);
+    }
+
+    .ac-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: auto;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    /* EMPTY STATE */
+    .empty-state {
+      grid-column: 1/-1;
+      text-align: center;
+      padding: 5rem 2rem;
+    }
+
+    .empty-state p {
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    /* FOOTER */
+    footer {
+      background: var(--ink-light);
+      color: var(--paper);
+      padding: 4rem 5% 2rem;
+      margin-top: 6rem;
+      border-top: 1px solid rgba(245, 242, 236, 0.08);
+    }
+
+    .footer-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 3rem;
+      padding-bottom: 3rem;
+      border-bottom: 1px solid rgba(245, 242, 236, 0.1);
+      flex-wrap: wrap;
+    }
+
+    .footer-logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.4rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .footer-tagline {
+      font-size: 13px;
+      color: rgba(245, 242, 236, 0.5);
+      max-width: 260px;
+      line-height: 1.6;
+    }
+
+    .footer-links-wrap {
+      display: flex;
+      gap: 4rem;
+      flex-wrap: wrap;
+    }
+
+    .footer-col h4 {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(245, 242, 236, 0.4);
+      margin-bottom: 1rem;
+    }
+
+    .footer-col ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .footer-col ul li a {
+      font-size: 13px;
+      color: rgba(245, 242, 236, 0.7);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-col ul li a:hover {
+      color: var(--paper);
+    }
+
+    .footer-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-bottom p {
+      font-size: 12px;
+      color: rgba(245, 242, 236, 0.35);
+    }
+
+    /* SCROLL REVEAL */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    @media(max-width: 900px) {
+      .research-hero {
+        grid-template-columns: 1fr;
+        padding: 120px 5% 60px;
+        gap: 2.5rem;
+      }
+    }
+
+    @media(max-width: 600px) {
+      .nav-links {
+        display: none;
+      }
+
+      .burger {
+        display: flex;
+      }
+
+      .hero-stat-num {
+        font-size: 2rem;
+      }
+
+      .filter-bar {
+        gap: 0.5rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAV -->
+  <nav id="mainNav">
+    <button class="burger" id="burgerBtn" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+    <a href="https://9thbit.org" class="logo">
+      <img src="https://9thbit.org/assets/9th_logo_web.webp" alt="9th Bit Labs" width="140" height="36"
+        fetchpriority="high" decoding="async" />
+    </a>
+    <ul class="nav-links">
+      <li><a href="https://9thbit.org">Home</a></li>
+    </ul>
+  </nav>
+
+  <!-- MOBILE DRAWER -->
+  <div class="mob-overlay" id="mobOverlay"></div>
+  <div class="mob-drawer" id="mobDrawer">
+    <div class="mob-drawer-head">
+      <img src="https://9thbit.org/assets/9th_logo_web.webp" alt="9th Bit Labs" />
+      <button class="mob-close" id="mobClose">×</button>
+    </div>
+    <ul class="mob-nav-links" id="mobNavLinks">
+      <li><a href="https://9thbit.org">Home</a></li>
+    </ul>
+  </div>
+
+  <!-- HERO -->
+  <section class="research-hero">
+    <div>
+      <div class="eyebrow">9th Bit Labs</div>
+      <h1 class="hero-headline">AI &amp Computing<br><em>Research</em></h1>
+      <p class="hero-sub">Deep-dive articles from our engineering team on LLM agents, RAG, AI automation, and applied
+        machine learning — grounded in real production deployments.</p>
+    </div>
+    <div class="hero-right">
+      <div class="hero-stat-grid">
+        <div class="hero-stat">
+          <div class="hero-stat-num" id="statArticles">—</div>
+          <div class="hero-stat-label">Articles published</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">3</div>
+          <div class="hero-stat-label">Research tracks</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">18+</div>
+          <div class="hero-stat-label">Months in production AI</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">100%</div>
+          <div class="hero-stat-label">Practitioner-written</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FILTER BAR -->
+  <div class="filter-bar" id="filterBar">
+    <div class="filter-search-wrap">
+      <svg class="search-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="2.5">
+        <circle cx="11" cy="11" r="8" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+      </svg>
+      <input class="filter-search" id="searchInput" type="search" placeholder="Search articles…" autocomplete="off">
+    </div>
+    <div class="view-toggle">
+      <button class="view-btn active" id="gridViewBtn" title="Grid view" aria-label="Grid view">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+          <rect x="3" y="3" width="8" height="8" rx="1" />
+          <rect x="13" y="3" width="8" height="8" rx="1" />
+          <rect x="3" y="13" width="8" height="8" rx="1" />
+          <rect x="13" y="13" width="8" height="8" rx="1" />
+        </svg>
+      </button>
+      <button class="view-btn" id="listViewBtn" title="List view" aria-label="List view">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+      </button>
+    </div>
+    <span class="results-count" id="resultsCount"></span>
+  </div>
+
+  <!-- ARTICLES -->
+  <div class="articles-wrap">
+    <div class="articles-grid" id="articlesGrid">
+      <p style="padding:4rem; color:var(--muted);">Loading articles…</p>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-top">
+      <div>
+        <div class="footer-logo">9th Bit Labs</div>
+        <p class="footer-tagline">AI-powered engineering and automation for businesses building tomorrow.</p>
+      </div>
+      <div class="footer-links-wrap">
+        <div class="footer-col">
+          <h4>Research</h4>
+          <ul>
+            <li><a href="index.html">All Articles</a></li>
+            <li><a href="index.html?filter=AI+Research">AI Research</a></li>
+            <li><a href="index.html?filter=Engineering">Engineering</a></li>
+            <li><a href="index.html?filter=Strategy">Strategy</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="https://9thbit.org/#services">Services</a></li>
+            <li><a href="https://9thbit.org/#about">About</a></li>
+            <li><a href="https://9thbit.org/careers">Careers</a></li>
+            <li><a href="https://9thbit.org/#contact">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 9th Bit Labs. Nagpur, India.</p>
+      <div style="display:flex;gap:1.25rem;align-items:center;">
+        <a href="https://x.com/9thBitLabs"
+          style="color:rgba(245,242,236,0.5);text-decoration:none;font-size:13px;transition:color 0.2s;"
+          onmouseover="this.style.color='#F5F2EC'" onmouseout="this.style.color='rgba(245,242,236,0.5)'">Twitter</a>
+        <a href="https://www.linkedin.com/company/9thbitlabs"
+          style="color:rgba(245,242,236,0.5);text-decoration:none;font-size:13px;transition:color 0.2s;"
+          onmouseover="this.style.color='#F5F2EC'" onmouseout="this.style.color='rgba(245,242,236,0.5)'">LinkedIn</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ── Drawer ──
+    const drawer = document.getElementById('mobDrawer');
+    const overlay = document.getElementById('mobOverlay');
+    document.getElementById('burgerBtn').addEventListener('click', () => { drawer.classList.add('open'); overlay.classList.add('open'); document.body.style.overflow = 'hidden'; });
+    document.getElementById('mobClose').addEventListener('click', closeDrawer);
+    overlay.addEventListener('click', closeDrawer);
+    function closeDrawer() { drawer.classList.remove('open'); overlay.classList.remove('open'); document.body.style.overflow = ''; }
+
+    // ── Navbar scroll ──
+    const nav = document.getElementById('mainNav');
+    window.addEventListener('scroll', () => {
+      nav.style.background = window.scrollY > 50 ? 'rgba(245,242,236,0.95)' : 'var(--paper)';
+      nav.style.backdropFilter = window.scrollY > 50 ? 'blur(10px)' : 'none';
+    }, { passive: true });
+
+    // ── Reveal ──
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+    }, { threshold: 0.06, rootMargin: '0px 0px -20px 0px' });
+
+    // ── Animated counter ──
+    function animateCount(el, target, dur = 800) {
+      const start = performance.now();
+      function step(now) {
+        const p = Math.min((now - start) / dur, 1);
+        el.textContent = Math.round(p * target);
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    // ── State ──
+    let allArticles = [], activeFilter = 'all', searchQuery = '', isListView = false;
+    const urlParams = new URLSearchParams(location.search);
+    if (urlParams.get('filter')) activeFilter = urlParams.get('filter');
+
+    // ── Load ──
+    async function loadArticles() {
+      try {
+        const res = await fetch('articles.json');
+        const data = await res.json();
+        allArticles = data.articles;
+        animateCount(document.getElementById('statArticles'), allArticles.length);
+        // Sync filter button
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === activeFilter));
+        renderGrid();
+      } catch (e) {
+        document.getElementById('articlesGrid').innerHTML = '<p style="padding:4rem;color:var(--muted);">Could not load articles.</p>';
+      }
+    }
+
+    // ── Filter buttons ──
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        activeFilter = btn.dataset.filter;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b === btn));
+        renderGrid();
+      });
+    });
+
+    // ── Search ──
+    const searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('input', () => { searchQuery = searchInput.value.toLowerCase(); renderGrid(); });
+
+    // ── View toggle ──
+    const gridViewBtn = document.getElementById('gridViewBtn');
+    const listViewBtn = document.getElementById('listViewBtn');
+    const articlesGrid = document.getElementById('articlesGrid');
+    gridViewBtn.addEventListener('click', () => { isListView = false; articlesGrid.classList.remove('list-view'); gridViewBtn.classList.add('active'); listViewBtn.classList.remove('active'); });
+    listViewBtn.addEventListener('click', () => { isListView = true; articlesGrid.classList.add('list-view'); listViewBtn.classList.add('active'); gridViewBtn.classList.remove('active'); });
+
+    function formatDate(d) {
+      return new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    }
+
+    function getFiltered() {
+      return allArticles.filter(a => {
+        const catOk = activeFilter === 'all' || a.category === activeFilter;
+        const q = searchQuery;
+        const searchOk = !q || a.title.toLowerCase().includes(q) || a.excerpt.toLowerCase().includes(q) || a.tags.some(t => t.toLowerCase().includes(q));
+        return catOk && searchOk;
+      });
+    }
+
+    function renderGrid() {
+      const grid = document.getElementById('articlesGrid');
+      const articles = getFiltered();
+      const countEl = document.getElementById('resultsCount');
+
+      // Fade out → swap → fade in
+      grid.classList.add('fading');
+      setTimeout(() => {
+        if (!articles.length) {
+          grid.innerHTML = '<div class="empty-state"><p>No articles match your search.</p></div>';
+          countEl.textContent = '0 results';
+          grid.classList.remove('fading');
+          return;
+        }
+        countEl.textContent = articles.length + ' article' + (articles.length !== 1 ? 's' : '');
+
+        let html = '';
+
+        articles.forEach(a => {
+          const img = a.image ? `<img class="ac-image" src="${a.image}" alt="${a.title}" loading="lazy">` : '';
+          const viewBtn = a.paperUrl
+            ? `<a class="btn-view" href="${a.paperUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                View Full Paper
+              </a>` : '';
+          const dlBtn = a.downloadUrl
+            ? `<a class="btn-download" href="${a.downloadUrl}" download onclick="event.stopPropagation()">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Download Paper
+              </a>` : '';
+          html += `<div class="article-card reveal" onclick="window.location.href='article.html?id=${a.slug}'">
+            ${img}
+            <div class="ac-body">
+              <div class="ac-cat-row">
+                <span class="article-cat">${a.category}</span>
+                <span class="article-read-time">${a.readTime}</span>
+              </div>
+              <h3 class="ac-title">${a.title}</h3>
+              <p class="ac-excerpt">${a.excerpt}</p>
+              <div class="card-actions">${viewBtn}${dlBtn}</div>
+              <div class="ac-footer">
+                <span class="article-date">${formatDate(a.date)}</span>
+                <span class="read-link">Read →</span>
+              </div>
+            </div>
+          </div>`;
+        });
+
+        grid.innerHTML = html;
+        if (isListView) grid.classList.add('list-view');
+        grid.classList.remove('fading');
+        grid.querySelectorAll('.reveal').forEach(el => io.observe(el));
+      }, 200);
+    }
+
+    loadArticles();
+  </script>
+</body>
+
+</html>
